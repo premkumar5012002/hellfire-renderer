@@ -1,0 +1,9 @@
+# IDE folders
+.vs
+.idea
+
+# build folders
+cmake-build*
+
+# contents
+assets
