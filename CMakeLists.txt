@@ -9,6 +9,9 @@ include(Dependencies.cmake)
 
 add_executable(${PROJECT_NAME}
         src/Main.cpp
+        src/VkEngine.cpp
+        src/VkContext.cpp
+        src/VkSwapChain.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

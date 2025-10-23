@@ -4,6 +4,7 @@
 
 # build folders
 cmake-build*
+build
 
 # contents
 assets
