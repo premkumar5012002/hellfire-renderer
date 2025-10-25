@@ -12,6 +12,7 @@
 #include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
+#include <iostream>
 #include <span>
 #include <string>
 #include <vector>
@@ -22,7 +23,7 @@
         VkResult error = x;                                                                                            \
         if (error)                                                                                                     \
         {                                                                                                              \
-            std::cout << format("Detected Vulkan error: {}", string_VkResult(err)) << std::endl;                       \
+            std::cerr << std::format("Detected Vulkan error: {}", string_VkResult(error));                       \
             abort();                                                                                                   \
         }                                                                                                              \
     } while (0)

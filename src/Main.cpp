@@ -1,7 +1,6 @@
 #include "VkEngine.hpp"
 
-int main()
-{
+int main() {
     VulkanEngine engine;
 
     engine.init();

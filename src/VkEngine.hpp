@@ -1,11 +1,15 @@
 #pragma once
 
-#include "VkTypes.hpp"
+#include "VkContext.hpp"
+#include "VkSwapChain.hpp"
 
-class VulkanEngine
-{
+#include <memory>
+
+class VulkanEngine {
 public:
-    static VulkanEngine& Get();
+    static VulkanEngine &Get();
+
+    [[nodiscard]] struct SDL_Window *getWindow() const { return m_window; }
 
     void init();
 
@@ -16,10 +20,13 @@ public:
     void run();
 
 private:
-    bool       m_isInitialized = false;
-    int        m_frameNumber   = 0;
-    bool       m_stopRendering = false;
-    VkExtent2D m_windowExtent  = {1700, 900};
+    bool m_isInitialized = false;
+    int m_frameNumber = 0;
+    bool m_stopRendering = false;
+    VkExtent2D m_windowExtent = {1700, 900};
 
-    struct SDL_Window* m_window = nullptr;
+    SDL_Window *m_window = nullptr;
+
+    std::unique_ptr<VulkanContext> m_ctx = nullptr;
+    std::unique_ptr<VulkanSwapChain> m_swapChain = nullptr;
 };
