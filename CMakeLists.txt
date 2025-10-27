@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
 
 project(Hellfire-Renderer)
 
@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
         src/VkEngine.cpp
         src/VkContext.cpp
         src/VkSwapChain.cpp
+        src/VkImage.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

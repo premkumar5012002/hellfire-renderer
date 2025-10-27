@@ -26,10 +26,6 @@ void VulkanContext::init() {
 }
 
 void VulkanContext::cleanup() {
-    if (m_device != VK_NULL_HANDLE) {
-        vkDeviceWaitIdle(m_device); // Ensure GPU is done before destruction
-    }
-
     // Destroy logical device
     if (m_device != VK_NULL_HANDLE) {
         vkDestroyDevice(m_device, nullptr);
@@ -54,13 +50,11 @@ void VulkanContext::cleanup() {
     // Destroy surface (created with glfwCreateWindowSurface)
     if (m_surface != VK_NULL_HANDLE) {
         vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-        m_surface = VK_NULL_HANDLE;
     }
 
     // Destroy Vulkan instance
     if (m_instance != VK_NULL_HANDLE) {
         vkDestroyInstance(m_instance, nullptr);
-        m_instance = VK_NULL_HANDLE;
     }
 }
 
@@ -82,13 +76,13 @@ void VulkanContext::createInstance() {
     const char *const*sdlExtensions = SDL_Vulkan_GetInstanceExtensions(&sdlExtensionCount);
     std::vector requiredExtensions(sdlExtensions, sdlExtensions + sdlExtensionCount);
 
-#if defined(__APPLE__)
-    requiredExtensions.push_back(vk::KHRPortabilityEnumerationExtensionName);
-#endif
-
 #ifndef NDEBUG
     requiredLayers.assign(m_validationLayers.begin(), m_validationLayers.end());
     requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+
+#if defined(__APPLE__)
+    requiredExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
 
     VkInstanceCreateInfo createInfo{
@@ -101,7 +95,7 @@ void VulkanContext::createInstance() {
     };
 
 #if defined(__APPLE__)
-    createInfo.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+    createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
     VK_CHECK(vkCreateInstance(&createInfo, nullptr, &m_instance));
@@ -199,6 +193,10 @@ void VulkanContext::createLogicalDevice() {
 
     // Link feature chains
     features12.pNext = &features13;
+
+#if __APPLE__
+    m_deviceExtensions.push_back("VK_KHR_portability_subset");
+#endif
 
     VkDeviceCreateInfo createInfo{
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
