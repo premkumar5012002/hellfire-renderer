@@ -13,6 +13,8 @@ add_executable(${PROJECT_NAME}
         src/VkContext.cpp
         src/VkSwapChain.cpp
         src/VkImage.cpp
+        src/VkDescriptors.cpp
+        src/VkPipeline.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

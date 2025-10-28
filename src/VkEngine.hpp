@@ -4,14 +4,8 @@
 
 #include "VkTypes.hpp"
 #include "VkContext.hpp"
+#include "VkDescriptors.hpp"
 #include "VkSwapChain.hpp"
-
-struct FrameData {
-    VkCommandPool commandPool;
-    VkCommandBuffer commandBuffer;
-    VkSemaphore swapChainSemaphore, renderSemaphore;
-    VkFence renderFence;
-};
 
 constexpr unsigned int FRAME_OVERLAP = 2;
 
@@ -31,15 +25,42 @@ public:
     void run();
 
 private:
+    void initVulkan();
+
+    void initSwapChain();
+
     void initCommands();
 
     void initSyncStructures();
+
+    void initDescriptors();
+
+    void initPipeline();
+
+    void initBackgroundPipelines();
+
+    void drawBackground(VkCommandBuffer cmd) const;
 
     int m_frameNumber = 0;
     bool m_isInitialized = false;
     bool m_stopRendering = false;
     FrameData m_frames[FRAME_OVERLAP] = {};
     VkExtent2D m_windowExtent = {1700, 900};
+
+    DeletionQueue m_mainDeletionQueue;
+    VmaAllocator m_allocator;
+
+    //draw resources
+    AllocatedImage m_drawImage;
+    VkExtent2D m_drawExtent;
+
+    DescriptorAllocator m_globalDescriptorAllocator;
+
+    VkDescriptorSet m_drawImageDescriptor;
+    VkDescriptorSetLayout m_drawImageDescriptorLayout;
+
+    VkPipeline m_gradientPipeline;
+    VkPipelineLayout m_gradientPipelineLayout;
 
     SDL_Window *m_window = nullptr;
     std::unique_ptr<VulkanContext> m_ctx = nullptr;
