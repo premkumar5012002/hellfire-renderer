@@ -29,9 +29,9 @@
     } while (0)
 
 struct DeletionQueue {
-    std::deque<std::function<void()> > deletors;
+    std::deque<std::function<void()>> deletors;
 
-    void push_function(std::function<void()> &&function) {
+    void push_function(std::function<void()>&& function) {
         deletors.push_back(function);
     }
 
@@ -58,4 +58,11 @@ struct AllocatedImage {
     VmaAllocation allocation;
     VkExtent3D imageExtent;
     VkFormat imageFormat;
+};
+
+struct ComputePushConstants {
+    glm::vec4 data1;
+    glm::vec4 data2;
+    glm::vec4 data3;
+    glm::vec4 data4;
 };

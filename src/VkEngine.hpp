@@ -9,6 +9,15 @@
 
 constexpr unsigned int FRAME_OVERLAP = 2;
 
+struct ComputeEffect {
+    const char* name;
+
+    VkPipeline pipeline;
+    VkPipelineLayout layout;
+
+    ComputePushConstants data;
+};
+
 class VulkanEngine {
 public:
     static VulkanEngine& Get();
@@ -41,7 +50,7 @@ private:
 
     void initBackgroundPipelines();
 
-    void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
+    void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView) const;
 
     void drawBackground(VkCommandBuffer cmd) const;
 
@@ -64,14 +73,16 @@ private:
     VkDescriptorSet m_drawImageDescriptor;
     VkDescriptorSetLayout m_drawImageDescriptorLayout;
 
-    VkPipeline m_gradientPipeline;
-    VkPipelineLayout m_gradientPipelineLayout;
+    VkPipelineLayout m_pipelineLayout;
 
     VkFence m_immediateFence;
     VkCommandBuffer m_immediateCommandBuffer;
     VkCommandPool m_immediateCommandPool;
 
     VkDescriptorPool m_imguiPool;
+
+    int m_currentBackgroundEffect{0};
+    std::vector<ComputeEffect> m_backgroundEffects;
 
     SDL_Window* m_window = nullptr;
     std::unique_ptr<VulkanContext> m_ctx = nullptr;
