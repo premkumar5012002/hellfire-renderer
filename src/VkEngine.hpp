@@ -11,10 +11,10 @@ constexpr unsigned int FRAME_OVERLAP = 2;
 
 class VulkanEngine {
 public:
-    static VulkanEngine &Get();
+    static VulkanEngine& Get();
 
-    [[nodiscard]] struct SDL_Window *getWindow() const { return m_window; }
-    [[nodiscard]] FrameData &getCurrentFrame() { return m_frames[m_frameNumber % FRAME_OVERLAP]; }
+    [[nodiscard]] struct SDL_Window* getWindow() const { return m_window; }
+    [[nodiscard]] FrameData& getCurrentFrame() { return m_frames[m_frameNumber % FRAME_OVERLAP]; }
 
     void init();
 
@@ -37,20 +37,25 @@ private:
 
     void initPipeline();
 
+    void initImGui();
+
     void initBackgroundPipelines();
 
+    void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
+
     void drawBackground(VkCommandBuffer cmd) const;
+
+    void immediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function) const;
 
     int m_frameNumber = 0;
     bool m_isInitialized = false;
     bool m_stopRendering = false;
-    FrameData m_frames[FRAME_OVERLAP] = {};
+    FrameData m_frames[FRAME_OVERLAP]{};
     VkExtent2D m_windowExtent = {1700, 900};
 
     DeletionQueue m_mainDeletionQueue;
     VmaAllocator m_allocator;
 
-    //draw resources
     AllocatedImage m_drawImage;
     VkExtent2D m_drawExtent;
 
@@ -62,7 +67,13 @@ private:
     VkPipeline m_gradientPipeline;
     VkPipelineLayout m_gradientPipelineLayout;
 
-    SDL_Window *m_window = nullptr;
+    VkFence m_immediateFence;
+    VkCommandBuffer m_immediateCommandBuffer;
+    VkCommandPool m_immediateCommandPool;
+
+    VkDescriptorPool m_imguiPool;
+
+    SDL_Window* m_window = nullptr;
     std::unique_ptr<VulkanContext> m_ctx = nullptr;
     std::unique_ptr<VulkanSwapChain> m_swapChain = nullptr;
 };
