@@ -50,9 +50,13 @@ private:
 
     void initBackgroundPipelines();
 
+    void initTrianglePipeline();
+
     void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView) const;
 
     void drawBackground(VkCommandBuffer cmd) const;
+
+    void drawGeometry(VkCommandBuffer cmd);
 
     void immediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function) const;
 
@@ -83,6 +87,9 @@ private:
 
     int m_currentBackgroundEffect{0};
     std::vector<ComputeEffect> m_backgroundEffects;
+
+    VkPipelineLayout m_trianglePipelineLayout;
+    VkPipeline m_trianglePipeline;
 
     SDL_Window* m_window = nullptr;
     std::unique_ptr<VulkanContext> m_ctx = nullptr;
