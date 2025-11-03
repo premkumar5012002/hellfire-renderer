@@ -35,11 +35,9 @@ void VulkanEngine::init() {
 
     constexpr SDL_WindowFlags windowFlags = SDL_WINDOW_VULKAN;
 
-    m_window = SDL_CreateWindow(
-        "Vulkan Renderer",
-        static_cast<int>(m_windowExtent.width), static_cast<int>(m_windowExtent.height),
-        windowFlags
-    );
+    m_window = SDL_CreateWindow("Vulkan Renderer",
+                                static_cast<int>(m_windowExtent.width), static_cast<int>(m_windowExtent.height),
+                                windowFlags);
     if (!m_window) {
         std::cerr << std::format("Failed to create SDL Window");
     }
@@ -333,6 +331,7 @@ void VulkanEngine::initDescriptors() {
 
 void VulkanEngine::initPipeline() {
     initBackgroundPipelines();
+    initTrianglePipeline();
 }
 
 void VulkanEngine::initBackgroundPipelines() {
@@ -354,12 +353,12 @@ void VulkanEngine::initBackgroundPipelines() {
     VK_CHECK(vkCreatePipelineLayout(m_ctx->getDevice(), &computeLayout, nullptr, &m_pipelineLayout));
 
     VkShaderModule gradientShader;
-    if (!VkUtils::loadShaderModule("../resources/Shaders/gradient.comp.spv", m_ctx->getDevice(), &gradientShader)) {
+    if (!VkUtils::loadShaderModule("../../../resources/Shaders/gradient.comp.spv", m_ctx->getDevice(), &gradientShader)) {
         std::cerr << "Error when building the compute shader" << std::endl;
     }
 
     VkShaderModule skyShader;
-    if (!VkUtils::loadShaderModule("../resources/Shaders/sky.comp.spv", m_ctx->getDevice(), &skyShader)) {
+    if (!VkUtils::loadShaderModule("../../../resources/Shaders/sky.comp.spv", m_ctx->getDevice(), &skyShader)) {
         std::cerr << "Error when building the compute shader" << std::endl;
     }
 
@@ -431,26 +430,14 @@ void VulkanEngine::initBackgroundPipelines() {
 
 void VulkanEngine::initTrianglePipeline() {
     VkShaderModule triangleFragShader;
-    if (
-        !VkUtils::loadShaderModule(
-            "../resources/Shaders/coloredTriangle.frag.spv",
-            m_ctx->getDevice(),
-            &triangleFragShader
-        )
-    ) {
+    if (!VkUtils::loadShaderModule("../../../resources/Shaders/coloredTriangle.frag.spv", m_ctx->getDevice(), &triangleFragShader)) {
         std::cerr << std::format("Error when building the triangle fragment shader module");
     } else {
         std::cout << std::format("Triangle fragment shader successfully loaded");
     }
 
     VkShaderModule triangleVertexShader;
-    if (
-        !VkUtils::loadShaderModule(
-            "../resources/Shaders/coloredTriangle.vert.spv",
-            m_ctx->getDevice(),
-            &triangleVertexShader
-        )
-    ) {
+    if (!VkUtils::loadShaderModule("../../../resources/Shaders/coloredTriangle.vert.spv", m_ctx->getDevice(), &triangleVertexShader)) {
         std::cerr << std::format("Error when building the triangle vertex shader module");
     } else {
         std::cout << std::format("Triangle vertex shader successfully loaded");
@@ -615,7 +602,7 @@ void VulkanEngine::draw() {
 
     // transition the draw image and the swapChain image into their correct transfer layouts
     VkUtils::transitionImage(cmd, m_drawImage.image,
-                             VK_IMAGE_LAYOUT_GENERAL,
+                             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
     VkUtils::transitionImage(cmd, m_swapChain->getImages()[swapChainImageIndex],
@@ -747,7 +734,7 @@ void VulkanEngine::drawGeometry(VkCommandBuffer cmd) {
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_trianglePipeline);
 
     //set dynamic viewport and scissor
-    VkViewport viewport = {};
+    VkViewport viewport{};
     viewport.x = 0;
     viewport.y = 0;
     viewport.width = m_drawExtent.width;
