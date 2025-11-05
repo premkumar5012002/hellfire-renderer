@@ -11,10 +11,8 @@ constexpr unsigned int FRAME_OVERLAP = 2;
 
 struct ComputeEffect {
     const char* name;
-
     VkPipeline pipeline;
     VkPipelineLayout layout;
-
     ComputePushConstants data;
 };
 
@@ -26,37 +24,24 @@ public:
     [[nodiscard]] FrameData& getCurrentFrame() { return m_frames[m_frameNumber % FRAME_OVERLAP]; }
 
     void init();
-
     void cleanup();
-
-    void draw();
-
     void run();
+    void draw();
 
 private:
     void initVulkan();
-
     void initSwapChain();
-
     void initCommands();
-
     void initSyncStructures();
-
     void initDescriptors();
-
     void initPipeline();
-
+    void initBackgroundPipelines();
+    void initTrianglePipeline();
     void initImGui();
 
-    void initBackgroundPipelines();
-
-    void initTrianglePipeline();
-
-    void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView) const;
-
     void drawBackground(VkCommandBuffer cmd) const;
-
     void drawGeometry(VkCommandBuffer cmd);
+    void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView) const;
 
     void immediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function) const;
 
