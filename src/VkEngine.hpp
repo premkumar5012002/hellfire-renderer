@@ -34,14 +34,20 @@ private:
     void initCommands();
     void initSyncStructures();
     void initDescriptors();
+    void initDefaultData();
     void initPipeline();
     void initBackgroundPipelines();
-    void initTrianglePipeline();
+    void initMeshPipeline();
     void initImGui();
 
     void drawBackground(VkCommandBuffer cmd) const;
     void drawGeometry(VkCommandBuffer cmd);
     void drawImGui(VkCommandBuffer cmd, VkImageView targetImageView) const;
+
+    GPUMeshBuffers uploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
+    AllocatedBuffer createBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+    void destroyBuffer(const AllocatedBuffer& buffer);
 
     void immediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function) const;
 
@@ -73,8 +79,10 @@ private:
     int m_currentBackgroundEffect{0};
     std::vector<ComputeEffect> m_backgroundEffects;
 
-    VkPipelineLayout m_trianglePipelineLayout;
-    VkPipeline m_trianglePipeline;
+    VkPipelineLayout m_meshPipelineLayout;
+    VkPipeline m_meshPipeline;
+
+    GPUMeshBuffers m_rectangle;
 
     SDL_Window* m_window = nullptr;
     std::unique_ptr<VulkanContext> m_ctx = nullptr;
